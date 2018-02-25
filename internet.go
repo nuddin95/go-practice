@@ -1,25 +1,27 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"net/http"
 	"io/ioutil"
 	"encoding/xml")
 
 type SitemapIndex struct{
-	Location []Location `xml:"sitemap"`
+	Location []string `xml:"sitemap>loc"`
 }
 
-type Location struct{
-	Loc string `xml:"loc"`
+type News struct{
+	Titles []string `xml:"url>news>title"`
+	Keywords []string `xml:"url>news>keywords"`
+	Locations []string `xml:"url>loc"`
 }
 
 /* NOT 100% SURE HOW THIS WORKS BUT IT 
 TELLS HOW TO REPRESENT THE LOCATION OJECT
 AS A STRING */
-func (l Location) String() string{
-	return fmt.Sprintf(l.Loc)
-}
+// func (l Location) String() string{
+// 	return fmt.Sprintf(l.Loc)
+// }
 
 func main(){
 	resp, _ := http.Get("https://www.washingtonpost.com/news-sitemap-index.xml")
@@ -28,8 +30,14 @@ func main(){
 	// fmt.Println(stringBody)
 	resp.Body.Close()
 
+	var n News
 	var s SitemapIndex
 	xml.Unmarshal(bytes, &s)
 
-	fmt.Println(s.Location)
+	for _, Location := range s.Location{
+		resp, _ := http.Get(Location)
+		bytes, _ := ioutil.ReadAll(resp.Body)
+		xml.Unmarshal(bytes, &n)
+	}
+
 }
