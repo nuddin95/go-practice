@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"net/http")
+	"net/http"
+	"encoding/json")
 	// "github.com/mmcdole/gofeed")
 
 func index_handler(w http.ResponseWriter, r *http.Request){
@@ -21,6 +22,11 @@ func index_handler(w http.ResponseWriter, r *http.Request){
 // 	fmt.Fprintf(w, feed.Title)
 // }
 
+func data(w http.ResponseWriter, r *http.Request){
+	people := [6]int{2, 3, 5, 7, 11, 13}
+	json.NewEncoder(w).Encode(people)
+}
+
 func main(){
 	//specifies the path and what function to run
 	http.HandleFunc("/", index_handler)
@@ -28,6 +34,8 @@ func main(){
 	//rss feed
 	// http.HandleFunc("/rss", rss)
 
+
+	http.HandleFunc("/data", data)
 	//creates the server
 	http.ListenAndServe(":8000", nil)
 }
